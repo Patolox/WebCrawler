@@ -1,14 +1,23 @@
 import scrapy
 
-
 class CarrosSpider(scrapy.Spider):
-    i = 0
+
     name = 'carros'
     allowed_domains = ['pe.olx.com.br']
     start_urls = ['http://pe.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/']
 
+    # def __init__(self, stats):
+    #     super(CarrosSpider, self).__init__()
+    #     self.stats = stats
+
+    # @classmethod
+    # def from_crawler(cls, crawler):
+    #     return cls(crawler.stats)
+
     def parse(self, response):
-        self.i = self.i + 1
+        # self.stats.inc_value('count')
+        CarrosSpider.crawler.stats.inc_value('count')
+        
         ul = response.xpath('//*[@id="content"]/div/div[2]/div[9]/ul/li')
 
         for li in ul:
@@ -16,10 +25,11 @@ class CarrosSpider(scrapy.Spider):
             href = li.xpath('.//a/@href').extract_first()
             if item is not None:
                 yield scrapy.Request(url= href, callback=self.parse_detail)
-                
-        next_page = response.xpath('//*[@id="content"]/div/div[2]/div[12]/ul/li[16]/a/@href').extract_first()
         
-        if self.i < 4:
+        next_page = response.xpath('//*[@id="content"]/div/div[2]/div[12]/ul/li[last()-1]/a/@href').extract_first()
+
+        if CarrosSpider.crawler.stats.get_value('count') < 4:
+            
             yield scrapy.Request(url=next_page, callback=self.parse)
                 
     def parse_detail(self, response):
