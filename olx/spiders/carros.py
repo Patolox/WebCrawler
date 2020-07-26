@@ -16,7 +16,7 @@ class CarrosSpider(scrapy.Spider):
 
     def parse(self, response):
         # self.stats.inc_value('count')
-        CarrosSpider.crawler.stats.inc_value('count')
+        # CarrosSpider.crawler.stats.inc_value('count')
         
         ul = response.xpath('//*[@id="content"]/div/div[2]/div[9]/ul/li')
 
@@ -28,9 +28,9 @@ class CarrosSpider(scrapy.Spider):
         
         next_page = response.xpath('//*[@id="content"]/div/div[2]/div[12]/ul/li[last()-1]/a/@href').extract_first()
 
-        if CarrosSpider.crawler.stats.get_value('count') < 4:
+        # if CarrosSpider.crawler.stats.get_value('count') < 4:
             
-            yield scrapy.Request(url=next_page, callback=self.parse)
+        yield scrapy.Request(url=next_page, callback=self.parse)
                 
     def parse_detail(self, response):
         divs = response.xpath('//*[@id="content"]/div[2]/div/div[2]/div[1]/div[25]/div/div[4]/div')
